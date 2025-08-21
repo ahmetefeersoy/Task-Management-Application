@@ -5,9 +5,11 @@ import {
   updateTask,
   deleteTask,
 } from "../controllers/tasks.js";
-import swaggerJsdoc from "swagger-jsdoc";
+import { authenticateToken } from "../middleware/auth.js";
 
 const router = Router();
+
+router.use(authenticateToken);
 
 /**
  * @swagger
