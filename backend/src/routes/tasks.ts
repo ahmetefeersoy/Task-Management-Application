@@ -32,8 +32,16 @@ router.use(authenticateToken);
  *           description: The task description
  *         status:
  *           type: string
- *           enum: [pending, in-progress, completed]
+ *           enum: [PENDING, IN_PROGRESS, COMPLETED, CANCELLED]
  *           description: The task status
+ *         priority:
+ *           type: string
+ *           enum: [LOW, MEDIUM, HIGH]
+ *           description: The task priority
+ *         dueDate:
+ *           type: string
+ *           format: date-time
+ *           description: Due date for the task
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -44,7 +52,8 @@ router.use(authenticateToken);
  *         id: 1
  *         title: Complete project
  *         description: Finish the task management application
- *         status: pending
+ *         status: PENDING
+ *         priority: MEDIUM
  *         createdAt: 2023-10-01T10:00:00Z
  *         updatedAt: 2023-10-01T10:00:00Z
  */
@@ -53,17 +62,21 @@ router.use(authenticateToken);
  * @swagger
  * /api/tasks:
  *   get:
- *     summary: Get all tasks
+ *     summary: Get all tasks for the authenticated user
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all tasks
+ *         description: List of user's tasks
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Server error
  */
@@ -75,6 +88,8 @@ router.get("/", getTasks);
  *   post:
  *     summary: Create a new task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -83,7 +98,6 @@ router.get("/", getTasks);
  *             type: object
  *             required:
  *               - title
- *               - description
  *             properties:
  *               title:
  *                 type: string
@@ -91,11 +105,18 @@ router.get("/", getTasks);
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [pending, in-progress, completed]
+ *                 enum: [PENDING, IN_PROGRESS, COMPLETED, CANCELLED]
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, MEDIUM, HIGH]
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
  *             example:
  *               title: New Task
  *               description: Task description
- *               status: pending
+ *               status: PENDING
+ *               priority: MEDIUM
  *     responses:
  *       201:
  *         description: Task created successfully
@@ -105,6 +126,8 @@ router.get("/", getTasks);
  *               $ref: '#/components/schemas/Task'
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Server error
  */
@@ -116,6 +139,8 @@ router.post("/", createTask);
  *   put:
  *     summary: Update a task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -136,20 +161,25 @@ router.post("/", createTask);
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [pending, in-progress, completed]
+ *                 enum: [PENDING, IN_PROGRESS, COMPLETED, CANCELLED]
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, MEDIUM, HIGH]
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
  *             example:
  *               title: Updated Task
  *               description: Updated description
- *               status: completed
+ *               status: COMPLETED
+ *               priority: HIGH
  *     responses:
  *       200:
  *         description: Task updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Task not found
  *       500:
@@ -163,6 +193,8 @@ router.put("/:id", updateTask);
  *   delete:
  *     summary: Delete a task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -182,6 +214,8 @@ router.put("/:id", updateTask);
  *                   type: string
  *               example:
  *                 message: Task deleted successfully
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Task not found
  *       500:
