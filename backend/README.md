@@ -86,6 +86,48 @@ The server will be available at `http://localhost:8080`
 
 API documentation will be available at `http://localhost:8080/api-docs`
 
+## 🐳 Docker Deployment
+
+### Quick Start with Docker Compose (Recommended)
+
+1. **Copy environment file**
+   ```bash
+   cp .env.docker .env
+   # Edit .env with your preferred database credentials
+   ```
+
+2. **Run with Docker Compose**
+   ```bash
+   # From project root directory
+   docker-compose up -d
+   ```
+
+3. **Run database migrations**
+   ```bash
+   # Run migrations in the backend container
+   docker-compose exec backend npx prisma migrate deploy
+   ```
+
+4. **Access the application**
+   - Backend API: `http://localhost:8080`
+   - API Documentation: `http://localhost:8080/api-docs`
+   - Frontend: `http://localhost:5173`
+
+### Individual Docker Commands
+
+**Build backend image:**
+```bash
+docker build -t task-backend .
+```
+
+**Run backend container:**
+```bash
+docker run -p 8080:8080 \
+  -e DATABASE_URL="your_database_url" \
+  -e JWT_SECRET="your_jwt_secret" \
+  task-backend
+```
+
 ## Available Scripts
 
 - `npm start` - Start the development server with hot reload

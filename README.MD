@@ -64,6 +64,43 @@ Task-Management-Application/
 - PostgreSQL database
 - npm or yarn package manager
 
+**OR**
+
+- Docker & Docker Compose (Recommended for quick setup)
+
+### Option 1: Docker Deployment (Recommended) 🐳
+
+1. **Clone the Repository**
+```bash
+git clone https://github.com/ahmetefeersoy/Task-Management-Application.git
+cd Task-Management-Application
+```
+
+2. **Setup Environment**
+```bash
+# Copy Docker environment file
+cp .env.docker .env
+
+# Edit .env file with your preferred database credentials
+# Default values work for local development
+```
+
+3. **Run with Docker Compose**
+```bash
+# Start all services (database, backend, frontend)
+docker-compose up -d
+
+# Run database migrations
+docker-compose exec backend npx prisma migrate deploy
+```
+
+4. **Access the Application**
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8080
+- **API Documentation**: http://localhost:8080/api-docs
+
+### Option 2: Local Development
+
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/ahmetefeersoy/Task-Management-Application.git
@@ -83,7 +120,7 @@ npx prisma generate
 npx prisma db push
 npm start
 ```
-Backend will run on `http://localhost:5000`
+Backend will run on `http://localhost:8080`
 
 ### 4. Frontend Setup
 ```bash
@@ -93,7 +130,7 @@ npm run dev
 ```
 Frontend will run on `http://localhost:5173`
 
-## 📚 API Documentation
+## 📚 API Documentation with Swagger
 
 The API documentation is available via Swagger UI at:
 `http://localhost:8080/api-docs`
@@ -177,6 +214,42 @@ npm run build
 cd backend
 npm run build
 npm run start:prod
+```
+
+## 🐳 Production Deployment
+
+### Docker Production Setup
+```bash
+# Build and start production containers
+docker-compose -f docker-compose.yml up -d
+
+# Scale services if needed
+docker-compose up -d --scale frontend=2
+
+# Check service status
+docker-compose ps
+
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+```
+
+### Environment Configuration
+- Copy `.env.docker` to `.env`
+- Update production database credentials
+- Set strong JWT secret (minimum 32 characters)
+- Configure production domain/ports if needed
+
+### Database Management
+```bash
+# Run migrations in production
+docker-compose exec backend npx prisma migrate deploy
+
+# Access database directly
+docker-compose exec database psql -U taskuser -d taskmanager
+
+# Backup database
+docker-compose exec database pg_dump -U taskuser taskmanager > backup.sql
 ```
 
 

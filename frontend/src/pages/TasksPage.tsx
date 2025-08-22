@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import type { RootState } from "../store";
 import { setTasks, addTaskSuccess, updateTaskSuccess, deleteTaskSuccess } from "../store/taskslice";
 import { fetchTasks, addTask, updateTask, deleteTask } from "../store/taskslice";
 import { logout } from "../store/authslice";
+import { createTaskSchema, type CreateTaskFormData } from '../utils/schemas';
 
 interface TasksPageProps {
   onLogout: () => void;
@@ -14,14 +17,23 @@ const TasksPage: React.FC<TasksPageProps> = ({ onLogout }) => {
   const tasks = useSelector((state: RootState) => state.tasks.list);
   const dispatch = useDispatch();
   
-  const [newTask, setNewTask] = useState({ 
-    title: "", 
-    description: "", 
-    priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH",
-    dueDate: ""
-  });
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CreateTaskFormData>({
+    resolver: zodResolver(createTaskSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      priority: 'MEDIUM',
+      dueDate: '',
+    },
+  });
 
   const loadTasks = useCallback(async () => {
     try {
@@ -36,28 +48,25 @@ const TasksPage: React.FC<TasksPageProps> = ({ onLogout }) => {
     loadTasks();
   }, [loadTasks]);
 
-  const handleAddTask = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newTask.title.trim()) {
-      setIsLoading(true);
-      try {
-        const taskData = await addTask({
-          title: newTask.title,
-          description: newTask.description,
-          status: "PENDING",
-          priority: newTask.priority,
-          dueDate: newTask.dueDate || undefined
-        });
-        dispatch(addTaskSuccess(taskData));
-        setNewTask({ title: "", description: "", priority: "MEDIUM", dueDate: "" });
-        setShowAddForm(false);
-        toast.success('✅ Task created successfully!');
-      } catch (error) {
-        console.error('Failed to add task:', error);
-        toast.error('❌ Failed to create task. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
+  const onSubmit = async (data: CreateTaskFormData) => {
+    setIsLoading(true);
+    try {
+      const taskData = await addTask({
+        title: data.title,
+        description: data.description || '',
+        status: "PENDING",
+        priority: data.priority,
+        dueDate: data.dueDate || undefined
+      });
+      dispatch(addTaskSuccess(taskData));
+      reset();
+      setShowAddForm(false);
+      toast.success('✅ Task created successfully!');
+    } catch (error) {
+      console.error('Failed to add task:', error);
+      toast.error('❌ Failed to create task. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -219,35 +228,38 @@ const TasksPage: React.FC<TasksPageProps> = ({ onLogout }) => {
         {showAddForm && (
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h3 className="text-lg font-semibold mb-4">Add New Task</h3>
-            <form onSubmit={handleAddTask} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Task Title
                 </label>
                 <input
                   type="text"
-                  value={newTask.title}
-                  onChange={(e) =>
-                    setNewTask({ ...newTask, title: e.target.value })
-                  }
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  {...register('title')}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.title ? 'border-red-300' : 'border-gray-300'
+                  }`}
                   placeholder="Enter task title"
                 />
+                {errors.title && (
+                  <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Description
                 </label>
                 <textarea
-                  value={newTask.description}
-                  onChange={(e) =>
-                    setNewTask({ ...newTask, description: e.target.value })
-                  }
+                  {...register('description')}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.description ? 'border-red-300' : 'border-gray-300'
+                  }`}
                   placeholder="Task description (optional)"
                 />
+                {errors.description && (
+                  <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                )}
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -256,16 +268,18 @@ const TasksPage: React.FC<TasksPageProps> = ({ onLogout }) => {
                     Priority
                   </label>
                   <select
-                    value={newTask.priority}
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, priority: e.target.value as "LOW" | "MEDIUM" | "HIGH" })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    {...register('priority')}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.priority ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   >
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
                   </select>
+                  {errors.priority && (
+                    <p className="mt-1 text-sm text-red-600">{errors.priority.message}</p>
+                  )}
                 </div>
                 
                 <div>
@@ -274,12 +288,14 @@ const TasksPage: React.FC<TasksPageProps> = ({ onLogout }) => {
                   </label>
                   <input
                     type="datetime-local"
-                    value={newTask.dueDate}
-                    onChange={(e) =>
-                      setNewTask({ ...newTask, dueDate: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    {...register('dueDate')}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.dueDate ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.dueDate && (
+                    <p className="mt-1 text-sm text-red-600">{errors.dueDate.message}</p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-2">
