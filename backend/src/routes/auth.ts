@@ -7,21 +7,40 @@ const router = Router();
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     RegisterUser:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - password
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: The user's unique username
+ *           minLength: 1
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: The user's email address
+ *         password:
+ *           type: string
+ *           description: The user's password
+ *           minLength: 6
+ *       example:
+ *         username: johndoe
+ *         email: user@example.com
+ *         password: password123
+ *     LoginUser:
  *       type: object
  *       required:
  *         - email
  *         - password
  *       properties:
- *         id:
- *           type: integer
- *           description: The auto-generated id of the user
  *         email:
  *           type: string
- *           description: The user email
+ *           format: email
  *         password:
  *           type: string
- *           description: The user password
  *       example:
  *         email: user@example.com
  *         password: password123
@@ -37,8 +56,15 @@ const router = Router();
  *           properties:
  *             id:
  *               type: integer
+ *             username:
+ *               type: string
  *             email:
  *               type: string
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
  */
 
 /**
@@ -52,7 +78,7 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/RegisterUser'
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -60,10 +86,51 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               message: "User registered successfully"
+ *               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *               user:
+ *                 id: 1
+ *                 username: "johndoe"
+ *                 email: "user@example.com"
  *       400:
- *         description: Bad request
- *       409:
- *         description: User already exists
+ *         description: Bad request - Validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               missing_fields:
+ *                 summary: Missing required fields
+ *                 value:
+ *                   error: "All fields required"
+ *               invalid_email:
+ *                 summary: Invalid email format
+ *                 value:
+ *                   error: "Invalid email format"
+ *               short_password:
+ *                 summary: Password too short
+ *                 value:
+ *                   error: "Password must be at least 6 characters"
+ *               user_exists:
+ *                 summary: User already exists
+ *                 value:
+ *                   error: "Username or email already exists"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               config_error:
+ *                 summary: Server configuration error
+ *                 value:
+ *                   error: "Server configuration error"
+ *               general_error:
+ *                 summary: Registration failed
+ *                 value:
+ *                   error: "Registration failed"
  */
 router.post("/register", register);
 
@@ -78,18 +145,7 @@ router.post("/register", register);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *             example:
- *               email: user@example.com
- *               password: password123
+ *             $ref: '#/components/schemas/LoginUser'
  *     responses:
  *       200:
  *         description: Login successful
@@ -97,10 +153,51 @@ router.post("/register", register);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               message: "Login successful"
+ *               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *               user:
+ *                 id: 1
+ *                 username: "johndoe"
+ *                 email: "user@example.com"
+ *       400:
+ *         description: Bad request - Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               error: "Email and password required"
  *       401:
  *         description: Invalid credentials
- *       400:
- *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               user_not_found:
+ *                 summary: User not found
+ *                 value:
+ *                   error: "User not found"
+ *               invalid_password:
+ *                 summary: Invalid password
+ *                 value:
+ *                   error: "Invalid password"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               jwt_config_error:
+ *                 summary: JWT secret not configured
+ *                 value:
+ *                   error: "JWT secret not configured"
+ *               login_failed:
+ *                 summary: General login error
+ *                 value:
+ *                   error: "Login failed"
  */
 router.post("/login", login);
 

@@ -5,28 +5,27 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// src/controllers/auth.ts - login fonksiyonunu güncelle
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body; // email kullan, username değil
+  const { email, password } = req.body; 
   
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password required" });
   }
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } }); // email ile ara
+    const user = await prisma.user.findUnique({ where: { email } }); 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "User not found" });
     }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Invalid password" });
     }
 
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-      return res.status(500).json({ error: "Server configuration error" });
+      return res.status(500).json({ error: "JWT secret not configured" });
     }
 
     const token = jwt.sign(
@@ -46,7 +45,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-// register fonksiyonunu da güncelle - token ekle
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
   

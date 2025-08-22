@@ -25,8 +25,12 @@ A RESTful API for task management with JWT authentication built with Node.js, Ex
 ## Prerequisites
 
 - Node.js (v18 or higher)
-- PostgreSQL database
+- PostgreSQL database (Local installation **OR** Cloud service)
 - npm or yarn package manager
+
+### Database Options
+- **Local**: PostgreSQL installed locally
+- **Cloud**: Supabase, Neon, Railway, ElephantSQL, etc.
 
 ## Setup Instructions
 
@@ -46,17 +50,30 @@ A RESTful API for task management with JWT authentication built with Node.js, Ex
    # Copy the example environment file
    cp .env.example .env
    
-   # Then edit .env file with your actual database credentials and JWT secret
+   # Then edit .env file with your database credentials and JWT secret
+   # Example DATABASE_URL for cloud services:
+   # postgresql://username:password@host:port/database
    ```
    
    See `.env.example` file for all required environment variables.
 
 4. **Setup database**
+   
+   **Option A: Using Cloud Database (Recommended for development)**
    ```bash
-   # Run database migrations
+   # Push schema to your cloud database (Supabase, Neon, etc.)
+   npx prisma db push
+   
+   # Generate Prisma Client
+   npx prisma generate
+   ```
+   
+   **Option B: Using Local Database with Migrations**
+   ```bash
+   # Run database migrations (for local PostgreSQL)
    npx prisma migrate dev
    
-   # Generate Prisma Client (Important!)
+   # Generate Prisma Client
    npx prisma generate
    ```
 
@@ -74,5 +91,26 @@ API documentation will be available at `http://localhost:8080/api-docs`
 - `npm start` - Start the development server with hot reload
 - `npm run build` - Build the project for production
 - `npx prisma studio` - Open Prisma Studio for database management
-- `npx prisma migrate dev` - Run database migrations
+- `npx prisma db push` - Push schema changes to database (for cloud databases)
+- `npx prisma migrate dev` - Run database migrations (for local databases)
 - `npx prisma generate` - Generate Prisma Client
+
+## Database Setup Examples
+
+### Using Supabase (Free Cloud PostgreSQL)
+1. Create account at [supabase.com](https://supabase.com)
+2. Create new project
+3. Copy connection string to `.env`:
+   ```
+   DATABASE_URL="postgresql://postgres:your-password@db.xxx.supabase.co:5432/postgres"
+   ```
+4. Run `npx prisma db push`
+
+### Using Local PostgreSQL
+1. Install PostgreSQL locally
+2. Create database
+3. Update `.env` with local connection:
+   ```
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/task-tracker"
+   ```
+4. Run `npx prisma migrate dev`

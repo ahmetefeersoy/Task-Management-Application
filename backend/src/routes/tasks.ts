@@ -117,6 +117,7 @@ router.get("/", getTasks);
  *               description: Task description
  *               status: PENDING
  *               priority: MEDIUM
+ *               dueDate: "2023-12-31T23:59:59Z"
  *     responses:
  *       201:
  *         description: Task created successfully
@@ -173,6 +174,7 @@ router.post("/", createTask);
  *               description: Updated description
  *               status: COMPLETED
  *               priority: HIGH
+ *               dueDate: "2023-12-31T23:59:59Z"
  *     responses:
  *       200:
  *         description: Task updated successfully
