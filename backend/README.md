@@ -1,158 +1,194 @@
-# Task Management API Backend
+# Backend - Task Management Application
 
-A RESTful API for task management with JWT authentication built with Node.js, Express, TypeScript, Prisma, and PostgreSQL.
+Modern Node.js backend API with TypeScript, Express, and Prisma ORM.
 
-## Features
+## 🚀 Technologies
 
-- 🔐 JWT Authentication (Register/Login)
-- 📝 CRUD Operations for Tasks
-- 👤 User-specific task management
-- 🗄️ PostgreSQL database with Prisma ORM
-- 📚 Swagger API documentation
-- 🔒 Protected routes with JWT middleware
+- **Node.js** with TypeScript
+- **Express.js** for REST API
+- **Prisma ORM** for database management
+- **PostgreSQL** database
+- **JWT** for authentication
+- **Bcrypt** for password hashing
+- **Zod** for input validation
+- **Swagger** for API documentation
+- **Jest** for testing
 
-## Tech Stack
+## 📊 Test Coverage
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Language**: TypeScript
-- **Database**: PostgreSQL
-- **ORM**: Prisma
-- **Authentication**: JWT
-- **Documentation**: Swagger/OpenAPI
-- **Password Hashing**: bcryptjs
+[![Tests](https://img.shields.io/badge/tests-13%20passed-brightgreen)]()
+[![Coverage](https://img.shields.io/badge/coverage-88.88%25-brightgreen)]()
 
-## Prerequisites
+### Latest Test Results
+```
+=============================== Coverage summary ===============================
+Statements   : 88.88% ( 120/135 )
+Branches     : 58.33% ( 21/36 )
+Functions    : 90% ( 9/10 )
+Lines        : 88.28% ( 113/128 )
+================================================================================
+Test Suites: 1 passed, 1 total
+Tests:       13 passed, 13 total
+Snapshots:   0 total
+Time:        6.072 s
+```
 
-- Node.js (v18 or higher)
-- PostgreSQL database (Local installation **OR** Cloud service)
-- npm or yarn package manager
+### Test Categories
+- ✅ **Authentication Tests** - User registration, login, validation
+- ✅ **Task Management Tests** - CRUD operations for tasks
+- ✅ **Authorization Tests** - Protected routes and token validation
+- ✅ **Validation Tests** - Input validation and error handling
+- ✅ **API Integration Tests** - End-to-end API functionality
 
-### Database Options
-- **Local**: PostgreSQL installed locally
-- **Cloud**: Supabase, Neon, Railway, ElephantSQL, etc.
+## 📁 Project Structure
 
-## Setup Instructions
+```
+backend/src/
+├── controllers/        # Route handlers
+│   ├── auth.ts        # Authentication logic
+│   └── tasks.ts       # Task management logic
+├── middleware/        # Express middleware
+│   └── auth.ts        # JWT authentication middleware
+├── utils/             # Utility functions
+│   └── validation.ts  # Input validation schemas
+├── prisma/           # Database configuration
+│   └── schema.prisma # Database schema
+├── __tests__/        # Test files
+│   └── api.test.ts   # API integration tests
+├── app.ts            # Express app configuration
+└── index.ts          # Server entry point
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd backend
-   ```
+## 🎯 API Features
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### Authentication Endpoints
+- **POST** `/api/auth/register` - User registration with validation
+- **POST** `/api/auth/login` - User authentication with JWT
 
-3. **Setup environment variables**
-   ```bash
-   # Copy the example environment file
-   cp .env.example .env
-   
-   # Then edit .env file with your database credentials and JWT secret
-   # Example DATABASE_URL for cloud services:
-   # postgresql://username:password@host:port/database
-   ```
-   
-   See `.env.example` file for all required environment variables.
+### Task Management Endpoints
+- **GET** `/api/tasks` - Get all user tasks
+- **POST** `/api/tasks` - Create new task
+- **PUT** `/api/tasks/:id` - Update task
+- **DELETE** `/api/tasks/:id` - Delete task
 
-4. **Setup database**
-   
-   **Option A: Using Cloud Database (Recommended for development)**
-   ```bash
-   # Push schema to your cloud database (Supabase, Neon, etc.)
-   npx prisma db push
-   
-   # Generate Prisma Client
-   npx prisma generate
-   ```
-   
-   **Option B: Using Local Database with Migrations**
-   ```bash
-   # Run database migrations (for local PostgreSQL)
-   npx prisma migrate dev
-   
-   # Generate Prisma Client
-   npx prisma generate
-   ```
+### Task Properties
+- **Title** - Task name (required)
+- **Description** - Detailed task description (optional)
+- **Status** - PENDING, IN_PROGRESS, COMPLETED
+- **Priority** - LOW, MEDIUM, HIGH
+- **Due Date** - Optional deadline
+- **User Association** - Tasks linked to authenticated user
 
-5. **Start the development server**
-   ```bash
-   npm start
-   ```
+## 🚦 Setup & Installation
 
-The server will be available at `http://localhost:8080`
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-API documentation will be available at `http://localhost:8080/api-docs`
+### 2. Environment Configuration
+Create a `.env` file:
+
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/taskdb"
+JWT_SECRET="your-super-secret-jwt-key"
+PORT=8080
+```
+
+### 3. Database Setup
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# (Optional) Seed database
+npx prisma db seed
+```
+
+### 4. Start Development Server
+```bash
+npm run dev
+```
+
+API will be available at `http://localhost:8080`
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Test Configuration
+- **Framework**: Jest with TypeScript support
+- **Environment**: Node.js test environment
+- **Coverage**: HTML and LCOV reports generated
+- **Timeout**: 10 seconds per test
 
 ## 🐳 Docker Deployment
 
-### Quick Start with Docker Compose (Recommended)
+### With Docker Compose (Recommended)
+```bash
+# From project root directory
+docker-compose up -d
 
-1. **Copy environment file**
-   ```bash
-   cp .env.docker .env
-   # Edit .env with your preferred database credentials
-   ```
-
-2. **Run with Docker Compose**
-   ```bash
-   # From project root directory
-   docker-compose up -d
-   ```
-
-3. **Run database migrations**
-   ```bash
-   # Run migrations in the backend container
-   docker-compose exec backend npx prisma migrate deploy
-   ```
-
-4. **Access the application**
-   - Backend API: `http://localhost:8080`
-   - API Documentation: `http://localhost:8080/api-docs`
-   - Frontend: `http://localhost:5173`
+# API will be available at http://localhost:8080
+```
 
 ### Individual Docker Commands
-
-**Build backend image:**
 ```bash
+# Build backend image
 docker build -t task-backend .
+
+# Run backend container
+docker run -p 8080:8080 task-backend
 ```
 
-**Run backend container:**
-```bash
-docker run -p 8080:8080 \
-  -e DATABASE_URL="your_database_url" \
-  -e JWT_SECRET="your_jwt_secret" \
-  task-backend
-```
+## 📖 API Documentation
 
-## Available Scripts
+Interactive API documentation available at:
+- **Swagger UI**: `http://localhost:8080/api-docs`
 
-- `npm start` - Start the development server with hot reload
-- `npm run build` - Build the project for production
-- `npx prisma studio` - Open Prisma Studio for database management
-- `npx prisma db push` - Push schema changes to database (for cloud databases)
-- `npx prisma migrate dev` - Run database migrations (for local databases)
-- `npx prisma generate` - Generate Prisma Client
+### Authentication Flow
+1. Register new user with email/username/password
+2. Login to receive JWT token
+3. Include token in `Authorization: Bearer <token>` header
+4. Access protected task management endpoints
 
-## Database Setup Examples
+### Error Responses
+- **400** - Bad Request (validation errors)
+- **401** - Unauthorized (missing/invalid token)
+- **404** - Not Found (resource doesn't exist)
+- **500** - Internal Server Error
 
-### Using Supabase (Free Cloud PostgreSQL)
-1. Create account at [supabase.com](https://supabase.com)
-2. Create new project
-3. Copy connection string to `.env`:
-   ```
-   DATABASE_URL="postgresql://postgres:your-password@db.xxx.supabase.co:5432/postgres"
-   ```
-4. Run `npx prisma db push`
+## 📱 Available Scripts
 
-### Using Local PostgreSQL
-1. Install PostgreSQL locally
-2. Create database
-3. Update `.env` with local connection:
-   ```
-   DATABASE_URL="postgresql://postgres:password@localhost:5432/task-tracker"
-   ```
-4. Run `npx prisma migrate dev`
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build TypeScript to JavaScript
+- `npm start` - Start production server
+- `npm test` - Run test suite
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run prisma:generate` - Generate Prisma client
+- `npm run prisma:migrate` - Run database migrations
+
+## 🔒 Security Features
+
+- **JWT Authentication** - Secure token-based auth
+- **Password Hashing** - Bcrypt with salt rounds
+- **Input Validation** - Zod schema validation
+- **CORS Protection** - Configurable cross-origin requests
+- **Rate Limiting** - API endpoint protection
+- **SQL Injection Prevention** - Prisma ORM protection
+
+## 📝 License
+
+This project is licensed under the MIT License.
