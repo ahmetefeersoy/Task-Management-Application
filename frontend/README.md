@@ -1,13 +1,80 @@
-# React + TypeScript + Vite
+# Frontend - Task Management Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern React frontend application with TypeScript, Redux Toolkit, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Technologies
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** with TypeScript
+- **Vite** for fast development and building
+- **Redux Toolkit** for state management
+- **Tailwind CSS** for styling
+- **React Router DOM** for navigation
+- **Axios** for API communication
+- **React Hot Toast** for notifications
 
-## Expanding the ESLint configuration
+## 📁 Project Structure
+
+```
+frontend/src/
+├── components/         # Reusable UI components
+├── pages/             # Main application pages
+│   ├── LoginPage.tsx  # User authentication
+│   ├── RegisterPage.tsx # User registration
+│   └── TasksPage.tsx  # Main task management
+├── store/             # Redux store configuration
+│   ├── authslice.ts   # Authentication state
+│   ├── taskslice.ts   # Task management state
+│   └── index.ts       # Store configuration
+├── utils/             # Utility functions
+│   └── axiosInstance.ts # API client setup
+├── App.tsx            # Main app component
+├── main.tsx           # Application entry point
+└── index.css          # Global styles
+```
+
+## 🎨 Features
+
+### Authentication
+- **User Registration**: Create new accounts with email/username
+- **User Login**: Secure JWT-based authentication
+- **Auto-logout**: Token expiration handling
+- **Protected Routes**: Authentication-required pages
+
+### Task Management
+- **Create Tasks**: Add new tasks with title, description, priority, due date
+- **View Tasks**: See all personal tasks in organized list
+- **Update Tasks**: Toggle completion status, edit task details
+- **Delete Tasks**: Remove tasks with confirmation dialog
+- **Priority Levels**: Visual color coding (Low/Medium/High)
+- **Due Dates**: Optional date/time scheduling
+
+### User Experience
+- **Responsive Design**: Works on desktop and mobile
+- **Toast Notifications**: Real-time feedback for actions
+- **Loading States**: Visual indicators during API calls
+- **Confirmation Dialogs**: Beautiful modals for critical actions
+- **Form Validation**: Client-side input validation
+
+## 🚦 Setup & Installation
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Environment Configuration
+Create a `.env` file in the frontend directory:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
+
+Application will start on `http://localhost:5173`
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 

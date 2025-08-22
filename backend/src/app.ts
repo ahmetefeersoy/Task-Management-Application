@@ -6,9 +6,10 @@ import authRoutes from "./routes/auth.js";
 import taskRoutes from "./routes/tasks.js";
 
 const app = express();
+const FRONTEND_PORT = process.env.FRONTENDPORT_PORT || 5173;
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: `http://localhost:${FRONTEND_PORT}`,
   credentials: true,
 };
 

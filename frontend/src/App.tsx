@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from './store';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import TasksPage from './pages/TasksPage';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentView, setCurrentView] = useState<'login' | 'register'>('login');
+  const token = useSelector((state: RootState) => state.auth.token);
+
+  // Check if user is already logged in on app start
+  useEffect(() => {
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, [token]);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleRegister = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  const switchToRegister = () => {
+    setCurrentView('register');
+  };
+
+  const switchToLogin = () => {
+    setCurrentView('login');
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      {isLoggedIn ? (
+        <TasksPage onLogout={handleLogout} />
+      ) : (
+        <>
+          {currentView === 'login' ? (
+            <LoginPage 
+              onLogin={handleLogin} 
+              onSwitchToRegister={switchToRegister}
+            />
+          ) : (
+            <RegisterPage 
+              onRegister={handleRegister}
+              onSwitchToLogin={switchToLogin}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
