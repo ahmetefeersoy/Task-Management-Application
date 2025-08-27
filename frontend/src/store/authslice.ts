@@ -26,7 +26,6 @@ interface RegisterData {
   username: string;
 }
 
-// Normal fonksiyonlar - component'te kullanılacak
 export const login = async (data: LoginData) => {
   const res = await axiosInstance.post<AuthResponse>("/auth/login", data);
   return res.data;
